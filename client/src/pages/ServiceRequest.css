@@ -1,0 +1,56 @@
+.service-container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 600px;
+    margin: 40px auto;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    direction: rtl;
+  }
+  
+  .service-container h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .service-container label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #444;
+  }
+  
+  .service-container select,
+  .service-container textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  
+  .service-container button {
+    background-color: #2563eb;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .service-container button:hover {
+    background-color: #1e40af;
+  }
+  
+  .service-container .price {
+    font-size: 16px;
+    margin-bottom: 16px;
+    color: #111;
+  }
+  
