@@ -47,3 +47,42 @@
     margin: 10px 0;
   }
   
+  .services-selection {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .services-selection h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .category-block {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #eee;
+  }
+  
+  .category-block strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #222;
+  }
+  
+  .checkbox-label {
+    display: block;
+    margin: 4px 0;
+    font-size: 14px;
+    color: #444;
+  }
+  

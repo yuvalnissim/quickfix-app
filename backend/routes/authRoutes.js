@@ -1,3 +1,5 @@
+// backend/routes/authRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -5,7 +7,7 @@ const User = require('../models/User');
 
 // 🔐 רישום משתמש חדש
 router.post('/register', async (req, res) => {
-  const { email, password, name, phone, isProvider } = req.body;
+  const { email, password, name, phone, isProvider, servicesProvided } = req.body;
 
   console.log('📥 Received register data:', req.body);
 
@@ -24,7 +26,7 @@ router.post('/register', async (req, res) => {
       email,
       password: hashed,
       isProvider,
-      servicesProvided: isProvider ? [] : []
+      servicesProvided: isProvider ? servicesProvided : []
     });
 
     await newUser.save();

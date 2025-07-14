@@ -1,30 +1,107 @@
-.my-requests-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    background: #fff;
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    direction: rtl;
+.requests-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
   
-  .my-requests-container h2 {
-    margin-bottom: 1rem;
+  .requests-container h2 {
     text-align: center;
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #222;
   }
   
-  table {
+  .requests-container table {
     width: 100%;
     border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .requests-container th,
+  .requests-container td {
+    padding: 16px 20px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .requests-container th {
+    background-color: #f5f5f5;
+    font-size: 16px;
+    color: #555;
+    letter-spacing: 0.5px;
+  }
+  
+  .requests-container tbody tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  .requests-container tbody tr:hover {
+    background-color: #e6f7ff;
+    transition: background-color 0.3s;
+  }
+  
+  .requests-container td {
+    font-size: 15px;
+    color: #444;
+  }
+  
+  /* סטטוסים */
+  .status {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-block;
+  }
+  
+  .status.pending {
+    background-color: #fff4e5;
+    color: #d18f00;
+    border: 1px solid #ffd68a;
+  }
+  
+  .status.assigned {
+    background-color: #e6f4ff;
+    color: #0d6efd;
+    border: 1px solid #b6dcff;
+  }
+  
+  .status.completed {
+    background-color: #e6ffe9;
+    color: #2e7d32;
+    border: 1px solid #a7f0ba;
+  }
+  
+  .requests-container p {
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+  }
+  
+  /* כפתור חזרה */
+  .back-button-container {
+    margin-top: 30px;
     text-align: center;
   }
   
-  th, td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
+  .back-button {
+    padding: 10px 24px;
+    font-size: 16px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
   }
   
-  th {
-    background-color: #f8f8f8;
+  .back-button:hover {
+    background-color: #0b5ed7;
   }
   

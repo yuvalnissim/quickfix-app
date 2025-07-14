@@ -1,5 +1,5 @@
 import React from 'react';
-import ServiceRequest from '../components/ServiceRequest';
+import ServiceRequest from './ServiceRequest';
 import { useNavigate } from 'react-router-dom';
 
 const ClientDashboard = () => {

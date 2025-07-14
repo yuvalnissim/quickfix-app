@@ -3,6 +3,29 @@ import { toast } from 'react-toastify';
 import { register, login } from '../services/authService';
 import './LoginRegister.css';
 
+const serviceCatalog = {
+  חשמל: {
+    'התקנת שקע': 250,
+    'תיקון תקע שרוף': 200,
+    'הרחבת נקודת חשמל': 300,
+  },
+  אינסטלציה: {
+    'פתיחת סתימה': 220,
+    'החלפת ברז': 180,
+    'החלפת צנרת פשוטה': 240,
+  },
+  גבאי: {
+    'יציאה + טיפול כללי': 300,
+    'התקנת מדף/מודול': 250,
+    'תליית טלוויזיה': 280,
+  },
+  מחשבים: {
+    'פירמוט + התקנה': 220,
+    'התקנת תוכנה/דרייברים': 180,
+    'חיבור מדפסת ותיקון רשת': 200,
+  },
+};
+
 const LoginRegister = ({ setUser }) => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [formData, setFormData] = useState({
@@ -11,6 +34,7 @@ const LoginRegister = ({ setUser }) => {
     email: '',
     password: '',
     isProvider: false,
+    servicesProvided: [],
   });
 
   const handleChange = (e) => {
@@ -21,17 +45,30 @@ const LoginRegister = ({ setUser }) => {
     }));
   };
 
+  const toggleService = (serviceName) => {
+    setFormData(prev => {
+      const selected = new Set(prev.servicesProvided);
+      if (selected.has(serviceName)) selected.delete(serviceName);
+      else selected.add(serviceName);
+      return { ...prev, servicesProvided: Array.from(selected) };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isRegistering) {
       if (!formData.name || !formData.phone || !formData.email || !formData.password) {
-        toast.error("יש למלא את כל השדות");
+        toast.error("יש למלא את כל שדות ההרשמה");
+        return;
+      }
+      if (formData.isProvider && formData.servicesProvided.length === 0) {
+        toast.error("אנא בחר לפחות שירות אחד שאתה מספק");
         return;
       }
     } else {
       if (!formData.email || !formData.password) {
-        toast.error("יש למלא אימייל וסיסמה");
+        toast.error("אימייל וסיסמה הם חובה להתחברות");
         return;
       }
     }
@@ -44,7 +81,7 @@ const LoginRegister = ({ setUser }) => {
       toast.success(data.message || 'הפעולה הצליחה 🎉');
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.role);
-      localStorage.setItem('userId', data.userId); // ✅ שמירת מזהה המשתמש
+      localStorage.setItem('userId', data.userId);
       setUser(data);
 
       setTimeout(() => {
@@ -93,15 +130,38 @@ const LoginRegister = ({ setUser }) => {
           onChange={handleChange}
         />
         {isRegistering && (
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              name="isProvider"
-              checked={formData.isProvider}
-              onChange={handleChange}
-            />
-            אני נותן שירות
-          </label>
+          <>
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                name="isProvider"
+                checked={formData.isProvider}
+                onChange={handleChange}
+              />
+              אני נותן שירות
+            </label>
+
+            {formData.isProvider && (
+              <div className="services-selection">
+                <h4>בחר את השירותים שאתה מספק:</h4>
+                {Object.entries(serviceCatalog).map(([cat, services]) => (
+                  <div key={cat} className="category-block">
+                    <strong>{cat}</strong>
+                    {Object.keys(services).map(service => (
+                      <label key={service} className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={formData.servicesProvided.includes(service)}
+                          onChange={() => toggleService(service)}
+                        />
+                        {service}
+                      </label>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
         <button type="submit">{isRegistering ? 'הרשמה' : 'התחברות'}</button>
       </form>

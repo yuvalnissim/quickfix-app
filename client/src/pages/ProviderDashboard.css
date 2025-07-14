@@ -1,0 +1,72 @@
+.provider-dashboard {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: #fefefe;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .provider-dashboard h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .provider-dashboard table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+  }
+  
+  .provider-dashboard th,
+  .provider-dashboard td {
+    padding: 16px 20px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .provider-dashboard th {
+    background-color: #f2f2f2;
+    font-size: 16px;
+    color: #555;
+    letter-spacing: 0.5px;
+  }
+  
+  .provider-dashboard tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .provider-dashboard tbody tr:hover {
+    background-color: #e6f7ff;
+    transition: background-color 0.3s;
+  }
+  
+  .provider-dashboard td {
+    font-size: 15px;
+    color: #444;
+  }
+  
+  .provider-dashboard button {
+    padding: 6px 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+  }
+  
+  .provider-dashboard button:hover {
+    background-color: #218838;
+  }
+  
+  .provider-dashboard p {
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+  }
+  

@@ -1,7 +1,7 @@
-// routes/requestRoutes.js
 const express = require('express');
 const router = express.Router();
 const ServiceRequest = require('../models/ServiceRequest');
+const User = require('../models/User');
 
 // ✅ יצירת בקשת שירות חדשה
 router.post('/', async (req, res) => {
@@ -49,6 +49,52 @@ router.put('/:id/status', async (req, res) => {
   } catch (err) {
     console.error('❌ Error updating status:', err);
     res.status(500).json({ error: 'Failed to update request status' });
+  }
+});
+
+// 🆕 קבלת בקשות זמינות שמתאימות לנותן שירות לפי השירותים שהוא נותן
+router.get('/available/:providerId', async (req, res) => {
+  try {
+    const provider = await User.findById(req.params.providerId);
+    if (!provider || !provider.isProvider) {
+      return res.status(404).json({ error: 'נותן שירות לא נמצא או לא תקין' });
+    }
+
+    const matchingRequests = await ServiceRequest.find({
+      status: 'pending',
+      serviceType: { $in: provider.servicesProvided }
+    });
+
+    res.json(matchingRequests);
+  } catch (err) {
+    console.error('❌ Error fetching available requests:', err);
+    res.status(500).json({ error: 'שגיאה בקבלת בקשות זמינות' });
+  }
+});
+
+// 🆕 אישור בקשה ע"י נותן שירות (שיבוץ)
+router.put('/:id/assign', async (req, res) => {
+  const { providerId } = req.body;
+
+  try {
+    const provider = await User.findById(providerId);
+    if (!provider || !provider.isProvider) {
+      return res.status(400).json({ error: 'נותן שירות לא תקין' });
+    }
+
+    const updated = await ServiceRequest.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: 'assigned',
+        assignedProvider: providerId
+      },
+      { new: true }
+    );
+
+    res.json({ message: '✅ הבקשה שובצה לנותן השירות', request: updated });
+  } catch (err) {
+    console.error('❌ Error assigning provider:', err);
+    res.status(500).json({ error: 'שגיאה בעת שיבוץ נותן שירות' });
   }
 });
 

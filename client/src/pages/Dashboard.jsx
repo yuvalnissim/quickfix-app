@@ -1,13 +1,16 @@
+// client/src/pages/Dashboard.jsx
 import React from 'react';
-import ServiceRequest from './ServiceRequest';
+import ClientDashboard from './ClientDashboard';
+import ProviderDashboard from './ProviderDashboard';
 
-const ClientDashboard = () => {
+const Dashboard = () => {
+  const role = localStorage.getItem('role');
+
   return (
-    <div>
-      <h2>דשבורד לקוח</h2>
-      <ServiceRequest />
-    </div>
+    <>
+      {role === 'provider' ? <ProviderDashboard /> : <ClientDashboard />}
+    </>
   );
 };
 
-export default ClientDashboard;
+export default Dashboard;
