@@ -82,6 +82,7 @@ const LoginRegister = ({ setUser }) => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.role);
       localStorage.setItem('userId', data.userId);
+      localStorage.setItem('userName', data.name); // ✅ נשמר תמיד, גם ללקוח
       setUser(data);
 
       setTimeout(() => {

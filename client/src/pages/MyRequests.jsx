@@ -18,7 +18,11 @@ const MyRequests = () => {
       }
     };
 
-    if (userId) fetchRequests();
+    if (userId) {
+      fetchRequests();
+      const interval = setInterval(fetchRequests, 5000);
+      return () => clearInterval(interval);
+    }
   }, [userId]);
 
   const translateStatus = (status) => {
@@ -48,6 +52,7 @@ const MyRequests = () => {
               <th>מחיר</th>
               <th>סטטוס</th>
               <th>תאריך</th>
+              <th>צ׳אט</th>
             </tr>
           </thead>
           <tbody>
@@ -57,6 +62,22 @@ const MyRequests = () => {
                 <td>₪{req.price}</td>
                 <td>{translateStatus(req.status)}</td>
                 <td>{new Date(req.createdAt).toLocaleString('he-IL')}</td>
+                <td>
+                  {req.status === 'assigned' && req.assignedProvider && (
+                    <button
+                      onClick={() =>
+                        navigate(`/chat/${req._id}`, {
+                          state: {
+                            userId: req.assignedProvider,
+                            userName: 'נותן שירות' // לשפר בעתיד לפי נתוני השרת
+                          },
+                        })
+                      }
+                    >
+                      צ׳אט
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
