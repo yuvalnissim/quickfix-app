@@ -82,8 +82,9 @@ const LoginRegister = ({ setUser }) => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.role);
       localStorage.setItem('userId', data.userId);
-      localStorage.setItem('userName', data.name); // ✅ נשמר תמיד, גם ללקוח
-      setUser(data);
+      localStorage.setItem('userName', data.name);
+      localStorage.setItem('isProvider', data.isProvider);
+      //setUser(data);
 
       setTimeout(() => {
         window.location.href = '/dashboard';

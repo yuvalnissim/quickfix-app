@@ -2,18 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const http = require('http'); // ✅ נדרש בשביל Socket.IO
-const { Server } = require('socket.io'); // ✅ ייבוא socket.io
+const http = require('http');
+const { Server } = require('socket.io');
 
-// יצוא ראוטים
 const authRoutes = require('./routes/authRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const requestRoutes = require('./routes/requestRoutes');
 const messageRoutes = require('./routes/messageRoutes');
- 
 
 const app = express();
-const server = http.createServer(app); // ❗ זה מחליף את app.listen
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -21,29 +19,57 @@ const io = new Server(server, {
   }
 });
 
-// 📡 Socket.IO events
+// ✅ ניהול מפה של משתמשים מחוברים
+const userSocketMap = {};
+
 io.on('connection', (socket) => {
-  console.log('🟢 New socket connected:', socket.id);
+  console.log('🟢 Socket connected:', socket.id);
 
   socket.on('joinRoom', (roomId) => {
     socket.join(roomId);
-    console.log(`📥 Socket ${socket.id} joined room ${roomId}`);
+    console.log(`📥 ${socket.id} joined room ${roomId}`);
+
+    // אם זה userId (ולא requestId), נשמור מיפוי
+    if (!roomId.includes('-')) {
+      userSocketMap[roomId] = socket.id;
+    }
   });
 
-  socket.on('sendMessage', (data) => {
-    const { roomId, message } = data;
+  socket.on('sendMessage', ({ roomId, message }) => {
+    // שלח לכל מי שבחדר של הצ׳אט (בקשה)
     socket.to(roomId).emit('receiveMessage', message);
+
+    // שלח גם להתראה אצל המקבל אם הוא מחובר
+    const targetSocket = userSocketMap[message.receiverId];
+    if (targetSocket) {
+      io.to(targetSocket).emit('receiveMessage', message);
+    }
+  });
+
+  socket.on('typing', ({ roomId, senderId }) => {
+    socket.to(roomId).emit('userTyping', { senderId });
+  });
+
+  socket.on('stopTyping', ({ roomId, senderId }) => {
+    socket.to(roomId).emit('userStopTyping', { senderId });
   });
 
   socket.on('disconnect', () => {
     console.log('🔴 Socket disconnected:', socket.id);
+
+    // הסר את המשתמש מהמפה אם הוא נותן שירות/לקוח
+    for (const userId in userSocketMap) {
+      if (userSocketMap[userId] === socket.id) {
+        delete userSocketMap[userId];
+        break;
+      }
+    }
   });
 });
 
 app.use(express.json());
 app.use(cors());
 
-// 🌐 Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -53,7 +79,6 @@ mongoose.connect(process.env.MONGO_URI, {
   console.error('❌ MongoDB connection error:', err);
 });
 
-// 🌍 Routes
 app.get('/', (req, res) => {
   res.send('Welcome to QuickFix API!');
 });
@@ -61,9 +86,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/requests', requestRoutes);
-app.use('/api/messages', messageRoutes); 
+app.use('/api/messages', messageRoutes);
 
-// 🚀 Start server
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`🚀 Server + Socket.IO running on port ${PORT}`);

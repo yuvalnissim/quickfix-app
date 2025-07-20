@@ -15,6 +15,10 @@ const ProviderDashboard = () => {
     try {
       const res = await axios.get(`/api/requests/provider/${providerId}`);
       setAssignedRequests(res.data);
+
+      // שמירת requestIds של המשויכות ב-localStorage
+      const requestIds = res.data.map((r) => r._id);
+      localStorage.setItem('assignedRequests', JSON.stringify(requestIds));
     } catch (err) {
       console.error('❌ שגיאה בשליפת בקשות שהוקצו:', err);
       toast.error('שגיאה בשליפת בקשות שהוקצו');
@@ -32,12 +36,17 @@ const ProviderDashboard = () => {
 
   useEffect(() => {
     if (!providerId) return;
+
     fetchAssigned();
     fetchAvailable();
+
     const interval = setInterval(() => {
       fetchAvailable();
     }, 5000);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [providerId]);
 
   const handleAccept = async (id) => {

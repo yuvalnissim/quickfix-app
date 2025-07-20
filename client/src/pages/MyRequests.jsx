@@ -1,3 +1,4 @@
+// MyRequests.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './MyRequests.css';
@@ -69,7 +70,7 @@ const MyRequests = () => {
                         navigate(`/chat/${req._id}`, {
                           state: {
                             userId: req.assignedProvider,
-                            userName: 'נותן שירות' // לשפר בעתיד לפי נתוני השרת
+                            userName: 'נותן שירות', // לשפר בהמשך עם שם אמיתי
                           },
                         })
                       }
