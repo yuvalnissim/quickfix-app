@@ -19,7 +19,10 @@ const io = new Server(server, {
   }
 });
 
-// ✅ ניהול מפה של משתמשים מחוברים
+// ✅ הפצה של io לשימוש בקבצים אחרים
+module.exports.io = io;
+
+// ✅ ניהול מפת משתמשים מחוברים
 const userSocketMap = {};
 
 io.on('connection', (socket) => {
@@ -36,10 +39,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendMessage', ({ roomId, message }) => {
-    // שלח לכל מי שבחדר של הצ׳אט (בקשה)
     socket.to(roomId).emit('receiveMessage', message);
 
-    // שלח גם להתראה אצל המקבל אם הוא מחובר
+    // התראה ישירה למשתמש אם מחובר
     const targetSocket = userSocketMap[message.receiverId];
     if (targetSocket) {
       io.to(targetSocket).emit('receiveMessage', message);
@@ -57,7 +59,6 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('🔴 Socket disconnected:', socket.id);
 
-    // הסר את המשתמש מהמפה אם הוא נותן שירות/לקוח
     for (const userId in userSocketMap) {
       if (userSocketMap[userId] === socket.id) {
         delete userSocketMap[userId];
@@ -70,6 +71,7 @@ io.on('connection', (socket) => {
 app.use(express.json());
 app.use(cors());
 
+// ✅ חיבור למסד נתונים
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -83,6 +85,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to QuickFix API!');
 });
 
+// ✅ רישום כל הראוטים
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/requests', requestRoutes);

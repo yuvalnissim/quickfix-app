@@ -1,4 +1,4 @@
-// MyRequests.jsx
+// ✅ MyRequests.jsx (מעודכן)
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './MyRequests.css';
@@ -68,11 +68,15 @@ const MyRequests = () => {
                     <button
                       onClick={() =>
                         navigate(`/chat/${req._id}`, {
-                          state: {
-                            userId: req.assignedProvider,
-                            userName: 'נותן שירות', // לשפר בהמשך עם שם אמיתי
-                          },
-                        })
+                        state: {
+                          requestId: req._id,
+                          myUserId: userId,
+                          myUserName: localStorage.getItem('userName'),
+                          receiverId: req.assignedProvider,
+                          receiverName: 'נותן שירות',
+                        },
+                      })
+                        
                       }
                     >
                       צ׳אט

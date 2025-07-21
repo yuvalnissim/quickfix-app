@@ -151,10 +151,13 @@ const ProviderDashboard = () => {
                         navigate(`/chat/${req._id}`, {
                           state: {
                             requestId: req._id,
-                            userId: providerId,
-                            userName: userName,
+                            myUserId: providerId,
+                            myUserName: userName,
+                            receiverId: req.userId?._id || req.userId,
+                            receiverName: req.userId?.name || 'לקוח',
                           },
                         })
+                        
                       }
                     >
                       צ׳אט

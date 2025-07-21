@@ -1,4 +1,4 @@
-// ✅ App.jsx
+// ✅ App.jsx (מעודכן למניעת טואסט כפול)
 import React, { useEffect, useRef, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,62 +10,82 @@ import MyRequests from './pages/MyRequests';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 
-const socket = io('http://localhost:3001');
+const socket = io('http://localhost:3001'); // שנה לכתובת פרודקשן אם צריך
 
 const App = () => {
   const location = useLocation();
   const initializedRef = useRef(false);
+  const shownMessagesRef = useRef(new Set()); // ✅ למניעת כפילויות
+
   const [userId, setUserId] = useState(null);
   const [isProvider, setIsProvider] = useState(false);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    const storedIsProvider = localStorage.getItem('isProvider') === 'true';
-    setUserId(storedUserId);
-    setIsProvider(storedIsProvider);
-  }, []);
+    socket.on('connect', () => {
+      const storedUserId = localStorage.getItem('userId');
+      const storedIsProvider = localStorage.getItem('isProvider') === 'true';
 
-  useEffect(() => {
-    if (!userId || initializedRef.current) return;
+      setUserId(storedUserId);
+      setIsProvider(storedIsProvider);
 
-    socket.emit('joinRoom', userId); // הצטרפות לחדר אישי
+      if (!storedUserId || initializedRef.current) return;
 
-    if (isProvider) {
-      const assigned = JSON.parse(localStorage.getItem('assignedRequests') || '[]');
-      assigned.forEach((reqId) => {
-        socket.emit('joinRoom', reqId);
-      });
-    } else {
-      axios.get(`/api/requests/user/${userId}`)
-        .then((res) => {
-          const assignedRequests = res.data.filter((r) => r.status === 'assigned');
-          assignedRequests.forEach((req) => {
-            socket.emit('joinRoom', req._id);
-          });
-        })
-        .catch((err) => {
-          console.error('❌ שגיאה בטעינת בקשות הלקוח:', err);
+      console.log('📨 emitting joinRoom with userId:', storedUserId);
+      socket.emit('joinRoom', storedUserId);
+
+      if (storedIsProvider) {
+        const assigned = JSON.parse(localStorage.getItem('assignedRequests') || '[]');
+        assigned.forEach((reqId) => {
+          socket.emit('joinRoom', reqId);
         });
-    }
+      } else {
+        axios.get(`/api/requests/user/${storedUserId}`)
+          .then((res) => {
+            const assignedRequests = res.data.filter((r) => r.status === 'assigned');
+            assignedRequests.forEach((req) => {
+              socket.emit('joinRoom', req._id);
+            });
+          })
+          .catch((err) => {
+            console.error('❌ שגיאה בטעינת בקשות הלקוח:', err);
+          });
+      }
 
+      initializedRef.current = true;
+    });
+
+    // ✅ האזנה להודעות – כולל חסימת כפילויות
     socket.on('receiveMessage', (msg) => {
       const currentPath = window.location.pathname;
       const isChatOpen = currentPath.includes(`/chat/${msg.requestId}`);
-      const isMine = String(msg.receiverId) === String(userId);
+      const myUserId = localStorage.getItem('userId');
+      const isMine = String(msg.receiverId) === String(myUserId);
+
+      // יצירת מזהה ייחודי להודעה כדי לחסום כפילויות
+      const messageKey = `${msg.senderId}_${msg.timestamp}_${msg.text}`;
+      if (shownMessagesRef.current.has(messageKey)) return; // ❌ כבר הוצג
+      shownMessagesRef.current.add(messageKey); // ✅ מסומן כטופל
+
+      console.log('📩 Message received:', msg);
+      console.log('📌 currentPath:', currentPath);
+      console.log('📌 msg.requestId:', msg.requestId);
+      console.log('📌 isChatOpen:', isChatOpen);
+      console.log('📌 myUserId:', myUserId);
+      console.log('📌 msg.receiverId:', msg.receiverId);
+      console.log('📌 isMine:', isMine);
 
       if (!isChatOpen && isMine) {
-        toast.info(`💬 הודעה חדשה מ־${msg.senderName}: ${msg.text}`, {
+        toast.info(`💬 הודעה חדשה מ־${msg.senderName || 'משתמש'}: ${msg.text}`, {
           position: 'bottom-left',
         });
       }
     });
 
-    initializedRef.current = true;
-
     return () => {
+      socket.off('connect');
       socket.off('receiveMessage');
     };
-  }, [userId, isProvider]);
+  }, []);
 
   return (
     <>
