@@ -98,39 +98,50 @@ const LoginRegister = ({ setUser }) => {
   return (
     <div className="auth-container">
       <h2>{isRegistering ? 'הרשמה' : 'התחברות'}</h2>
-      <form onSubmit={handleSubmit}>
+  
+      <form onSubmit={handleSubmit} noValidate>
         {isRegistering && (
           <>
             <input
               type="text"
               name="name"
-              placeholder="שם מלא"
+              placeholder="שם מלא *"
               value={formData.name}
               onChange={handleChange}
+              aria-label="שם מלא"
+              required
             />
             <input
               type="text"
               name="phone"
-              placeholder="טלפון"
+              placeholder="טלפון *"
               value={formData.phone}
               onChange={handleChange}
+              aria-label="מספר טלפון"
+              required
             />
           </>
         )}
+  
         <input
           type="email"
           name="email"
-          placeholder="אימייל"
+          placeholder="אימייל *"
           value={formData.email}
           onChange={handleChange}
+          aria-label="אימייל"
+          required
         />
         <input
           type="password"
           name="password"
-          placeholder="סיסמה"
+          placeholder="סיסמה *"
           value={formData.password}
           onChange={handleChange}
+          aria-label="סיסמה"
+          required
         />
+  
         {isRegistering && (
           <>
             <label className="checkbox-label">
@@ -142,14 +153,14 @@ const LoginRegister = ({ setUser }) => {
               />
               אני נותן שירות
             </label>
-
+  
             {formData.isProvider && (
               <div className="services-selection">
                 <h4>בחר את השירותים שאתה מספק:</h4>
                 {Object.entries(serviceCatalog).map(([cat, services]) => (
                   <div key={cat} className="category-block">
                     <strong>{cat}</strong>
-                    {Object.keys(services).map(service => (
+                    {Object.keys(services).map((service) => (
                       <label key={service} className="checkbox-label">
                         <input
                           type="checkbox"
@@ -165,16 +176,25 @@ const LoginRegister = ({ setUser }) => {
             )}
           </>
         )}
-        <button type="submit">{isRegistering ? 'הרשמה' : 'התחברות'}</button>
+  
+        <button type="submit" className="auth-submit-button">
+          {isRegistering ? '🚀 הרשמה' : '🔐 התחברות'}
+        </button>
       </form>
-      <p>
+  
+      <p style={{ marginTop: '16px', fontSize: '15px' }}>
         {isRegistering ? 'כבר יש לך חשבון?' : 'אין לך חשבון?'}{' '}
-        <button className="switch-button" onClick={() => setIsRegistering(!isRegistering)}>
+        <button
+          className="switch-button"
+          onClick={() => setIsRegistering(!isRegistering)}
+          aria-label="החלף מצב התחברות/הרשמה"
+        >
           {isRegistering ? 'התחבר' : 'הרשם'}
         </button>
       </p>
     </div>
   );
+  
 };
 
 export default LoginRegister;

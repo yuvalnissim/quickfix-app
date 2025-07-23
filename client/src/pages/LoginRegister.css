@@ -86,3 +86,21 @@
     color: #444;
   }
   
+  .auth-submit-button {
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    margin-top: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .auth-submit-button:hover {
+    background-color: #1e40af;
+  }
+  

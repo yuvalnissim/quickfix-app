@@ -94,8 +94,11 @@ const ProviderDashboard = () => {
   return (
     <div className="provider-dashboard">
       <h2>בקשות זמינות לשיוך</h2>
+  
       {availableRequests.length === 0 ? (
-        <p>אין כרגע בקשות פתוחות שמתאימות לך.</p>
+        <p style={{ textAlign: 'center', color: '#64748b', marginTop: '24px', fontSize: '16px' }}>
+          אין כרגע בקשות פתוחות שמתאימות לך.
+        </p>
       ) : (
         <table>
           <thead>
@@ -113,7 +116,10 @@ const ProviderDashboard = () => {
                 <td>₪{req.price}</td>
                 <td>{new Date(req.createdAt).toLocaleString('he-IL')}</td>
                 <td>
-                  <button onClick={() => handleAccept(req._id)}>
+                  <button
+                    onClick={() => handleAccept(req._id)}
+                    aria-label="שיוך בקשה זו אליי"
+                  >
                     קבל בקשה
                   </button>
                 </td>
@@ -122,10 +128,13 @@ const ProviderDashboard = () => {
           </tbody>
         </table>
       )}
-
+  
       <h2 style={{ marginTop: '40px' }}>בקשות שהוקצו לך</h2>
+  
       {assignedRequests.length === 0 ? (
-        <p>אין בקשות משוייכות אליך כרגע.</p>
+        <p style={{ textAlign: 'center', color: '#64748b', marginTop: '24px', fontSize: '16px' }}>
+          אין בקשות משוייכות אליך כרגע.
+        </p>
       ) : (
         <table>
           <thead>
@@ -157,15 +166,18 @@ const ProviderDashboard = () => {
                             receiverName: req.userId?.name || 'לקוח',
                           },
                         })
-                        
                       }
+                      aria-label="מעבר לצ׳אט עם הלקוח"
                     >
-                      צ׳אט
+                      🗨️ צ׳אט
                     </button>
                   )}
                   {req.status !== 'completed' && (
-                    <button onClick={() => handleComplete(req._id)}>
-                      סמן כהושלמה
+                    <button
+                      onClick={() => handleComplete(req._id)}
+                      aria-label="סמן בקשה זו כהושלמה"
+                    >
+                      ✔️ הושלם
                     </button>
                   )}
                 </td>
@@ -176,6 +188,7 @@ const ProviderDashboard = () => {
       )}
     </div>
   );
+  
 };
 
 export default ProviderDashboard;

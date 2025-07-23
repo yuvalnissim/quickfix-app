@@ -139,12 +139,12 @@ const ChatRoom = () => {
   return (
     <div className="chat-room">
       <div className="chat-header">
-        <span>צ׳אט עם {receiverName}</span>
-        <button className="back-button" onClick={() => navigate(-1)}>
-          חזרה
+        <button className="back-button" onClick={() => navigate(-1)} aria-label="חזרה אחורה">
+          ←
         </button>
+        <span>צ׳אט עם {receiverName}</span>
       </div>
-
+  
       <div className="chat-messages">
         {messages.length === 0 ? (
           <p className="no-messages">אין הודעות עדיין</p>
@@ -155,7 +155,7 @@ const ChatRoom = () => {
             const prevMsg = messages[idx - 1];
             const prevDate = prevMsg ? formatDate(prevMsg.timestamp) : null;
             const showDateHeader = messageDate !== prevDate;
-
+  
             acc.push(
               <React.Fragment key={idx}>
                 {showDateHeader && (
@@ -178,7 +178,7 @@ const ChatRoom = () => {
         {otherTyping && <div className="typing-indicator">הצד השני מקליד...</div>}
         <div ref={messagesEndRef} />
       </div>
-
+  
       <div className="chat-input">
         <input
           type="text"
@@ -186,11 +186,15 @@ const ChatRoom = () => {
           value={input}
           onChange={handleTyping}
           onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          aria-label="הקלד הודעה"
         />
-        <button onClick={sendMessage}>שלח</button>
+        <button onClick={sendMessage} aria-label="שלח הודעה">
+          📤
+        </button>
       </div>
     </div>
   );
+  
 };
 
 export default ChatRoom;

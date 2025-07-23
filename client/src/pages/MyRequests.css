@@ -1,107 +1,155 @@
 .requests-container {
-    max-width: 900px;
-    margin: 40px auto;
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.requests-container h2 {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1e293b;
+}
+
+.requests-container table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.requests-container th,
+.requests-container td {
+  padding: 14px 18px;
+  text-align: center;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 15px;
+  color: #374151;
+}
+
+.requests-container th {
+  background-color: #f9fafb;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.requests-container tbody tr:hover {
+  background-color: #f0f9ff;
+  transition: background-color 0.3s;
+}
+
+/* סטטוסים */
+.status {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-block;
+}
+
+.status.pending {
+  background-color: #fff4e5;
+  color: #d97706;
+  border: 1px solid #facc15;
+}
+
+.status.assigned {
+  background-color: #e0f2fe;
+  color: #2563eb;
+  border: 1px solid #90cdf4;
+}
+
+.status.completed {
+  background-color: #dcfce7;
+  color: #059669;
+  border: 1px solid #86efac;
+}
+
+.requests-container button {
+  background-color: white;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.requests-container button:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+/* כפתור חזרה */
+.back-button-container {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.back-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #2563eb;
+}
+
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
   }
-  
-  .requests-container h2 {
-    text-align: center;
-    font-size: 28px;
-    margin-bottom: 25px;
-    color: #222;
+
+  thead {
+    display: none;
   }
-  
-  .requests-container table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
+
+  tbody tr {
+    margin-bottom: 16px;
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    padding: 12px;
   }
-  
-  .requests-container th,
-  .requests-container td {
-    padding: 16px 20px;
-    text-align: center;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .requests-container th {
-    background-color: #f5f5f5;
-    font-size: 16px;
-    color: #555;
-    letter-spacing: 0.5px;
-  }
-  
-  .requests-container tbody tr:nth-child(even) {
-    background-color: #fafafa;
-  }
-  
-  .requests-container tbody tr:hover {
-    background-color: #e6f7ff;
-    transition: background-color 0.3s;
-  }
-  
-  .requests-container td {
+
+  td {
+    text-align: right;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    position: relative;
     font-size: 15px;
-    color: #444;
   }
-  
-  /* סטטוסים */
-  .status {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 14px;
-    display: inline-block;
+
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    color: #64748b;
+    margin-bottom: 6px;
   }
-  
-  .status.pending {
-    background-color: #fff4e5;
-    color: #d18f00;
-    border: 1px solid #ffd68a;
+
+  .provider-dashboard button,
+  .requests-container button {
+    width: 100%;
+    margin-top: 8px;
+    font-size: 15px;
   }
-  
-  .status.assigned {
-    background-color: #e6f4ff;
-    color: #0d6efd;
-    border: 1px solid #b6dcff;
-  }
-  
-  .status.completed {
-    background-color: #e6ffe9;
-    color: #2e7d32;
-    border: 1px solid #a7f0ba;
-  }
-  
-  .requests-container p {
-    text-align: center;
-    color: #777;
-    font-size: 16px;
-  }
-  
-  /* כפתור חזרה */
-  .back-button-container {
-    margin-top: 30px;
-    text-align: center;
-  }
-  
+
   .back-button {
-    padding: 10px 24px;
-    font-size: 16px;
-    background-color: #0d6efd;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    width: 100%;
   }
-  
-  .back-button:hover {
-    background-color: #0b5ed7;
-  }
-  
+}
