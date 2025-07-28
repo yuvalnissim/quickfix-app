@@ -2,23 +2,35 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './MyRequests.css';
 import { useNavigate } from 'react-router-dom';
-import { FaComments } from 'react-icons/fa';
+import { FaComments, FaStar } from 'react-icons/fa';
 
 const MyRequests = () => {
   const [requests, setRequests] = useState([]);
+  const [ratingRequest, setRatingRequest] = useState(null);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [hoveredStar, setHoveredStar] = useState(0);
   const userId = localStorage.getItem('userId');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const res = await axios.get(`/api/requests/user/${userId}`);
-        setRequests(res.data);
-      } catch (err) {
-        console.error('❌ שגיאה בשליפת הבקשות:', err);
-      }
-    };
+  const fetchRequests = async () => {
+    try {
+      const res = await axios.get(`/api/requests/user/${userId}`);
+      setRequests(res.data);
 
+      const unrated = res.data.find(
+        (r) => r.status === 'completed' && (r.rating === null || r.rating === undefined)
+      );
+      if (unrated) {
+        setRatingRequest(unrated);
+      } else {
+        setRatingRequest(null);
+      }
+    } catch (err) {
+      console.error('❌ שגיאה בשליפת הבקשות:', err);
+    }
+  };
+
+  useEffect(() => {
     if (userId) {
       fetchRequests();
       const interval = setInterval(fetchRequests, 5000);
@@ -39,10 +51,26 @@ const MyRequests = () => {
     }
   };
 
+  const handleRatingSubmit = async () => {
+    if (!selectedRating || !ratingRequest) return;
+
+    try {
+      await axios.put(`/api/requests/${ratingRequest._id}/rating`, {
+        rating: selectedRating,
+      });
+      setSelectedRating(0);
+      setHoveredStar(0);
+      setRatingRequest(null);
+      fetchRequests(); // רענון לאחר שליחה
+    } catch (err) {
+      console.error('❌ שגיאה בשליחת דירוג:', err);
+    }
+  };
+
   return (
     <div className="requests-container">
       <h2>הבקשות שלי</h2>
-  
+
       {requests.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#64748b', marginTop: '40px', fontSize: '18px' }}>
           אין בקשות להצגה כרגע.
@@ -93,7 +121,7 @@ const MyRequests = () => {
           </tbody>
         </table>
       )}
-  
+
       <div className="back-button-container">
         <button
           className="back-button"
@@ -103,9 +131,42 @@ const MyRequests = () => {
           חזרה לדשבורד
         </button>
       </div>
+
+      {/* דירוג */}
+      {ratingRequest && (
+        <div className="rating-modal">
+          <div className="rating-box">
+            <h3>דרג את נותן השירות</h3>
+            <p>שירות: {ratingRequest.serviceType}</p>
+            <div className="stars">
+              {[1, 2, 3, 4, 5].map((num) => (
+                <FaStar
+                  key={num}
+                  size={28}
+                  onClick={() => setSelectedRating(num)}
+                  onMouseEnter={() => setHoveredStar(num)}
+                  onMouseLeave={() => setHoveredStar(0)}
+                  color={
+                    num <= (hoveredStar || selectedRating)
+                      ? '#facc15'
+                      : '#e5e7eb'
+                  }
+                  style={{ cursor: 'pointer' }}
+                />
+              ))}
+            </div>
+            <button
+              className="submit-rating-button"
+              onClick={handleRatingSubmit}
+              disabled={!selectedRating}
+            >
+              שלח דירוג
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-  
 };
 
 export default MyRequests;

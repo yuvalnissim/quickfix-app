@@ -98,4 +98,65 @@ router.put('/:id/assign', async (req, res) => {
   }
 });
 
+// ⭐ הוספת דירוג לבקשה שהושלמה
+router.put('/:id/rating', async (req, res) => {
+  const { rating } = req.body;
+
+  if (!rating || rating < 1 || rating > 5) {
+    return res.status(400).json({ error: 'דירוג חייב להיות בין 1 ל־5' });
+  }
+
+  try {
+    const request = await ServiceRequest.findById(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({ error: 'בקשה לא נמצאה' });
+    }
+
+    if (request.status !== 'completed') {
+      return res.status(400).json({ error: 'ניתן לדרג רק בקשה שהושלמה' });
+    }
+
+    request.rating = rating;
+    await request.save();
+
+    res.json({ message: '⭐ הדירוג נשמר בהצלחה', request });
+  } catch (err) {
+    console.error('❌ Error saving rating:', err);
+    res.status(500).json({ error: 'שגיאה בשמירת הדירוג' });
+  }
+});
+
+// 📊 סטטיסטיקות פרופיל לספק
+router.get('/provider/:providerId/stats', async (req, res) => {
+  const { from, to } = req.query;
+
+  try {
+    const match = {
+      assignedProvider: req.params.providerId,
+      status: 'completed'
+    };
+
+    if (from || to) {
+      match.createdAt = {};
+      if (from) match.createdAt.$gte = new Date(from);
+      if (to) match.createdAt.$lte = new Date(to);
+    }
+
+    const completedRequests = await ServiceRequest.find(match);
+
+    const totalJobs = completedRequests.length;
+    const totalRevenue = completedRequests.reduce((sum, req) => sum + (req.price || 0), 0);
+    const ratings = completedRequests.map(r => r.rating).filter(r => r !== null && r !== undefined);
+    const avgRating = ratings.length > 0
+      ? (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(2)
+      : null;
+
+    res.json({ totalJobs, totalRevenue, avgRating });
+  } catch (err) {
+    console.error('❌ Error fetching provider stats:', err);
+    res.status(500).json({ error: 'שגיאה בקבלת נתוני ספק' });
+  }
+});
+
 module.exports = router;

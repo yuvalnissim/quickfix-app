@@ -113,3 +113,24 @@
     width: 100%;
   }
 }
+
+.back-button-container {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.back-button {
+  padding: 10px 20px;
+  background-color: white;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #2563eb;
+  color: white;
+}

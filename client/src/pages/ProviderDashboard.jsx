@@ -15,8 +15,6 @@ const ProviderDashboard = () => {
     try {
       const res = await axios.get(`/api/requests/provider/${providerId}`);
       setAssignedRequests(res.data);
-
-      // שמירת requestIds של המשויכות ב-localStorage
       const requestIds = res.data.map((r) => r._id);
       localStorage.setItem('assignedRequests', JSON.stringify(requestIds));
     } catch (err) {
@@ -94,7 +92,7 @@ const ProviderDashboard = () => {
   return (
     <div className="provider-dashboard">
       <h2>בקשות זמינות לשיוך</h2>
-  
+
       {availableRequests.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#64748b', marginTop: '24px', fontSize: '16px' }}>
           אין כרגע בקשות פתוחות שמתאימות לך.
@@ -128,9 +126,9 @@ const ProviderDashboard = () => {
           </tbody>
         </table>
       )}
-  
+
       <h2 style={{ marginTop: '40px' }}>בקשות שהוקצו לך</h2>
-  
+
       {assignedRequests.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#64748b', marginTop: '24px', fontSize: '16px' }}>
           אין בקשות משוייכות אליך כרגע.
@@ -186,9 +184,17 @@ const ProviderDashboard = () => {
           </tbody>
         </table>
       )}
+
+      <div className="back-button-container">
+        <button
+          className="back-button"
+          onClick={() => navigate('/provider-profile')}
+        >
+          👤 צפה בפרופיל שלי
+        </button>
+      </div>
     </div>
   );
-  
 };
 
 export default ProviderDashboard;

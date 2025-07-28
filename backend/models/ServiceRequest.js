@@ -13,6 +13,15 @@ const serviceRequestSchema = new mongoose.Schema({
   price: Number,
   address: String,
   scheduledAt: Date,
+
+  // ⭐ דירוג לקוח לספק (1–5)
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    default: null
+  }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('ServiceRequest', serviceRequestSchema);

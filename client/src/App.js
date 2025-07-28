@@ -9,6 +9,7 @@ import LoginRegister from './pages/LoginRegister';
 import MyRequests from './pages/MyRequests';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import ProviderProfile from './pages/ProviderProfile';
 
 const socket = io('http://localhost:3001'); // שנה לכתובת פרודקשן אם צריך
 
@@ -94,6 +95,7 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chat/:requestId" element={<ChatRoom />} />
         <Route path="/my-requests" element={<MyRequests />} />
+        <Route path="/provider-profile" element={<ProviderProfile />} />
       </Routes>
       <ToastContainer />
     </>
