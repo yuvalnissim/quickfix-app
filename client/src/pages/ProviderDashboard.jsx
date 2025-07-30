@@ -42,9 +42,7 @@ const ProviderDashboard = () => {
       fetchAvailable();
     }, 5000);
 
-    return () => {
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [providerId]);
 
   const handleAccept = async (id) => {
@@ -89,6 +87,16 @@ const ProviderDashboard = () => {
     }
   };
 
+  const renderAddress = (addr) => {
+    if (!addr || typeof addr !== 'object') return addr || 'לא צוינה כתובת';
+
+    const { label, street, city, zip, floor, apt } = addr;
+    let extra = [];
+    if (floor) extra.push(`קומה ${floor}`);
+    if (apt) extra.push(`דירה ${apt}`);
+    return `${label}: ${street}, ${city}, ${zip}${extra.length ? ` (${extra.join(', ')})` : ''}`;
+  };
+
   return (
     <div className="provider-dashboard">
       <h2>בקשות זמינות לשיוך</h2>
@@ -103,6 +111,7 @@ const ProviderDashboard = () => {
             <tr>
               <th>שירות</th>
               <th>מחיר</th>
+              <th>כתובת</th>
               <th>נוצר בתאריך</th>
               <th>פעולה</th>
             </tr>
@@ -112,6 +121,7 @@ const ProviderDashboard = () => {
               <tr key={req._id}>
                 <td>{req.serviceType}</td>
                 <td>₪{req.price}</td>
+                <td>{renderAddress(req.address)}</td>
                 <td>{new Date(req.createdAt).toLocaleString('he-IL')}</td>
                 <td>
                   <button
@@ -140,6 +150,7 @@ const ProviderDashboard = () => {
               <th>שירות</th>
               <th>מחיר</th>
               <th>סטטוס</th>
+              <th>כתובת</th>
               <th>נוצר בתאריך</th>
               <th>פעולות</th>
             </tr>
@@ -150,6 +161,7 @@ const ProviderDashboard = () => {
                 <td>{req.serviceType}</td>
                 <td>₪{req.price}</td>
                 <td>{translateStatus(req.status)}</td>
+                <td>{renderAddress(req.address)}</td>
                 <td>{new Date(req.createdAt).toLocaleString('he-IL')}</td>
                 <td>
                   {req.status === 'assigned' && (

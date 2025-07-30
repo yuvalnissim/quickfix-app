@@ -71,4 +71,77 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// 🏠 📍 כתובות – RESTful routes
+
+// שליפת כל הכתובות של המשתמש
+router.get('/addresses/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: 'משתמש לא נמצא' });
+    res.json(user.addresses || []);
+  } catch (err) {
+    console.error('❌ Error fetching addresses:', err);
+    res.status(500).json({ error: 'שגיאה בשליפת כתובות' });
+  }
+});
+
+// הוספת כתובת חדשה
+router.post('/addresses/:userId', async (req, res) => {
+  const { label, street, city, zip, floor = '', apt = '' } = req.body;
+  if (!label || !street || !city || !zip) {
+    return res.status(400).json({ error: 'נא למלא את כל פרטי הכתובת' });
+  }
+
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: 'משתמש לא נמצא' });
+
+    user.addresses.push({ label, street, city, zip, floor, apt });
+    await user.save();
+    res.status(201).json({ message: '✅ כתובת נוספה', addresses: user.addresses });
+  } catch (err) {
+    console.error('❌ Error adding address:', err);
+    res.status(500).json({ error: 'שגיאה בהוספת כתובת' });
+  }
+});
+
+// עדכון כתובת לפי אינדקס
+router.put('/addresses/:userId/:index', async (req, res) => {
+  const { label, street, city, zip, floor = '', apt = '' } = req.body;
+  const index = parseInt(req.params.index);
+
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user || !user.addresses || !user.addresses[index]) {
+      return res.status(404).json({ error: 'כתובת לא נמצאה' });
+    }
+
+    user.addresses[index] = { label, street, city, zip, floor, apt };
+    await user.save();
+    res.json({ message: '✏️ כתובת עודכנה', addresses: user.addresses });
+  } catch (err) {
+    console.error('❌ Error updating address:', err);
+    res.status(500).json({ error: 'שגיאה בעדכון כתובת' });
+  }
+});
+
+// מחיקת כתובת לפי אינדקס
+router.delete('/addresses/:userId/:index', async (req, res) => {
+  const index = parseInt(req.params.index);
+
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user || !user.addresses || !user.addresses[index]) {
+      return res.status(404).json({ error: 'כתובת לא נמצאה' });
+    }
+
+    user.addresses.splice(index, 1);
+    await user.save();
+    res.json({ message: '🗑️ כתובת נמחקה', addresses: user.addresses });
+  } catch (err) {
+    console.error('❌ Error deleting address:', err);
+    res.status(500).json({ error: 'שגיאה במחיקת כתובת' });
+  }
+});
+
 module.exports = router;

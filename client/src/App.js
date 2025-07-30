@@ -1,4 +1,4 @@
-// ✅ App.jsx (מעודכן למניעת טואסט כפול)
+// ✅ App.jsx (מעודכן למניעת טואסט כפול + ClientProfile)
 import React, { useEffect, useRef, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,9 +7,10 @@ import Dashboard from './pages/Dashboard';
 import ChatRoom from './pages/ChatRoom';
 import LoginRegister from './pages/LoginRegister';
 import MyRequests from './pages/MyRequests';
+import ProviderProfile from './pages/ProviderProfile';
+import ClientProfile from './pages/ClientProfile';
 import { io } from 'socket.io-client';
 import axios from 'axios';
-import ProviderProfile from './pages/ProviderProfile';
 
 const socket = io('http://localhost:3001'); // שנה לכתובת פרודקשן אם צריך
 
@@ -62,10 +63,9 @@ const App = () => {
       const myUserId = localStorage.getItem('userId');
       const isMine = String(msg.receiverId) === String(myUserId);
 
-      // יצירת מזהה ייחודי להודעה כדי לחסום כפילויות
       const messageKey = `${msg.senderId}_${msg.timestamp}_${msg.text}`;
-      if (shownMessagesRef.current.has(messageKey)) return; // ❌ כבר הוצג
-      shownMessagesRef.current.add(messageKey); // ✅ מסומן כטופל
+      if (shownMessagesRef.current.has(messageKey)) return;
+      shownMessagesRef.current.add(messageKey);
 
       console.log('📩 Message received:', msg);
       console.log('📌 currentPath:', currentPath);
@@ -96,6 +96,7 @@ const App = () => {
         <Route path="/chat/:requestId" element={<ChatRoom />} />
         <Route path="/my-requests" element={<MyRequests />} />
         <Route path="/provider-profile" element={<ProviderProfile />} />
+        <Route path="/client-profile" element={<ClientProfile />} />
       </Routes>
       <ToastContainer />
     </>

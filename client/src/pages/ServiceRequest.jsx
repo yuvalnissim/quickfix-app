@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ServiceRequest.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -31,16 +31,35 @@ const ServiceRequest = () => {
   const [cat, setCat] = useState('');
   const [subCat, setSubCat] = useState('');
   const [message, setMessage] = useState('');
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const res = await axios.get(`/api/auth/addresses/${userId}`);
+        setAddresses(res.data);
+      } catch (err) {
+        console.error('❌ שגיאה בטעינת כתובות:', err);
+        toast.error('שגיאה בטעינת הכתובות');
+      }
+    };
+
+    if (userId) {
+      fetchAddresses();
+    }
+  }, [userId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const price = serviceCatalog[cat]?.[subCat];
-    const userId = localStorage.getItem('userId');
 
-    if (!cat || !subCat) {
-      toast.error('יש לבחור קטגוריה ושירות');
+    if (!cat || !subCat || !selectedAddress) {
+      toast.error('יש לבחור קטגוריה, שירות וכתובת');
       return;
     }
 
@@ -56,6 +75,7 @@ const ServiceRequest = () => {
           description: message,
           price,
           status: 'pending',
+          address: selectedAddress, // ✅ שולח כתובת כאובייקט מלא
         }),
       });
 
@@ -69,6 +89,7 @@ const ServiceRequest = () => {
       setCat('');
       setSubCat('');
       setMessage('');
+      setSelectedAddress(null);
     } catch (err) {
       console.error('❌ Error sending request:', err);
       toast.error(err.message || 'שגיאה בשליחת הבקשה');
@@ -117,6 +138,23 @@ const ServiceRequest = () => {
         {subCat && (
           <>
             <p className="price">מחיר השירות: ₪{serviceCatalog[cat][subCat]}</p>
+
+            <label htmlFor="address">כתובת:</label>
+            <select
+              id="address"
+              value={JSON.stringify(selectedAddress)}
+              onChange={(e) => setSelectedAddress(JSON.parse(e.target.value))}
+            >
+              <option value="">בחר כתובת</option>
+              {addresses.map((addr, idx) => (
+                <option key={idx} value={JSON.stringify(addr)}>
+                  {addr.label}: {addr.street}, {addr.city}
+                  {addr.floor && ` קומה ${addr.floor}`}
+                  {addr.apt && ` דירה ${addr.apt}`}
+                </option>
+              ))}
+            </select>
+
             <label htmlFor="note">הערה למבצע:</label>
             <textarea
               id="note"

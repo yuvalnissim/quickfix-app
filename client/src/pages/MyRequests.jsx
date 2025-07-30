@@ -3,6 +3,8 @@ import axios from 'axios';
 import './MyRequests.css';
 import { useNavigate } from 'react-router-dom';
 import { FaComments, FaStar } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+
 
 const MyRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -53,19 +55,29 @@ const MyRequests = () => {
 
   const handleRatingSubmit = async () => {
     if (!selectedRating || !ratingRequest) return;
-
+  
     try {
+      console.log('📤 שליחת דירוג:', selectedRating);
+  
       await axios.put(`/api/requests/${ratingRequest._id}/rating`, {
-        rating: selectedRating,
+        rating: selectedRating
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+  
+      toast.success('הדירוג נשלח בהצלחה');
       setSelectedRating(0);
       setHoveredStar(0);
       setRatingRequest(null);
-      fetchRequests(); // רענון לאחר שליחה
+      fetchRequests();
     } catch (err) {
-      console.error('❌ שגיאה בשליחת דירוג:', err);
+      console.error('❌ שגיאה בשליחת דירוג:', err?.response?.data || err);
+      toast.error('שגיאה בשליחת הדירוג');
     }
   };
+  
 
   return (
     <div className="requests-container">
@@ -130,6 +142,15 @@ const MyRequests = () => {
         >
           חזרה לדשבורד
         </button>
+        <div className="top-buttons">
+          <button
+            className="profile-button"
+            onClick={() => navigate('/client-profile')}
+            aria-label="מעבר לפרופיל"
+          >
+            👤 הפרופיל שלי
+          </button>
+        </div>
       </div>
 
       {/* דירוג */}

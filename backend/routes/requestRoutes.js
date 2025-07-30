@@ -117,15 +117,24 @@ router.put('/:id/rating', async (req, res) => {
       return res.status(400).json({ error: 'ניתן לדרג רק בקשה שהושלמה' });
     }
 
-    request.rating = rating;
-    await request.save();
+    console.log('📥 בקשה לפני דירוג:', request);
 
-    res.json({ message: '⭐ הדירוג נשמר בהצלחה', request });
+    request.rating = rating;
+    const saved = await request.save();
+
+    console.log('✅ נשמר בהצלחה:', saved);
+
+    res.json({ message: '⭐ הדירוג נשמר בהצלחה', request: saved });
   } catch (err) {
-    console.error('❌ Error saving rating:', err);
+    console.error('❌ Error saving rating:', err?.message || err);
+    if (err?.errors) {
+      console.error('🧩 Validation Errors:', err.errors);
+    }
     res.status(500).json({ error: 'שגיאה בשמירת הדירוג' });
   }
 });
+
+
 
 // 📊 סטטיסטיקות פרופיל לספק
 router.get('/provider/:providerId/stats', async (req, res) => {

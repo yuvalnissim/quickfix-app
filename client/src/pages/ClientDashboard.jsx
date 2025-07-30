@@ -22,6 +22,17 @@ const ClientDashboard = () => {
         >
           📋 הצג את הבקשות שלי
         </button>
+
+        <div className="profile-button-container">
+          <button
+            className="profile-button"
+            onClick={() => navigate('/client-profile')}
+            aria-label="מעבר לפרופיל"
+          >
+            👤 הפרופיל שלי
+          </button>
+        </div>
+
       </div>
     </div>
   );
