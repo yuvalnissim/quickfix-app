@@ -60,6 +60,11 @@ router.get('/available/:providerId', async (req, res) => {
       return res.status(404).json({ error: 'נותן שירות לא נמצא או לא תקין' });
     }
 
+    // 👇 בדיקת אונליין
+    if (!provider.isOnline) {
+      return res.status(403).json({ error: 'הספק אינו אונליין – לא ניתן לקבל בקשות כרגע' });
+    }
+
     const matchingRequests = await ServiceRequest.find({
       status: 'pending',
       serviceType: { $in: provider.servicesProvided }

@@ -7,8 +7,10 @@ import { useNavigate } from 'react-router-dom';
 const ProviderDashboard = () => {
   const [assignedRequests, setAssignedRequests] = useState([]);
   const [availableRequests, setAvailableRequests] = useState([]);
+  const [isOnline, setIsOnline] = useState(false);
   const providerId = localStorage.getItem('userId');
   const userName = localStorage.getItem('userName');
+  const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
   const fetchAssigned = async () => {
@@ -25,10 +27,40 @@ const ProviderDashboard = () => {
 
   const fetchAvailable = async () => {
     try {
-      const res = await axios.get(`/api/requests/available/${providerId}`);
+      const res = await axios.get(`/api/requests/available/${providerId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setAvailableRequests(res.data);
     } catch (err) {
       console.error('❌ שגיאה בשליפת בקשות זמינות:', err);
+      toast.error(err.response?.data?.error || 'שגיאה בשליפת בקשות זמינות');
+    }
+  };
+
+  const fetchOnlineStatus = async () => {
+    try {
+      const res = await axios.get(`/api/auth/users/${providerId}`);
+      setIsOnline(res.data.isOnline);
+    } catch (err) {
+      console.error('❌ שגיאה בשליפת סטטוס אונליין:', err);
+    }
+  };
+
+  const toggleOnlineStatus = async () => {
+    try {
+      const newStatus = !isOnline;
+      await axios.post(
+        '/api/provider/set-online',
+        { isOnline: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setIsOnline(newStatus);
+      toast.success(`הסטטוס עודכן: ${newStatus ? '🟢 Online' : '⚫ Offline'}`);
+      if (newStatus) fetchAvailable(); // שלוף זמינות רק אם עבר לאונליין
+      else setAvailableRequests([]);   // נקה רשימת בקשות אם ירד לאופליין
+    } catch (err) {
+      console.error('❌ שגיאה בעדכון אונליין:', err);
+      toast.error('שגיאה בעדכון סטטוס');
     }
   };
 
@@ -36,14 +68,16 @@ const ProviderDashboard = () => {
     if (!providerId) return;
 
     fetchAssigned();
-    fetchAvailable();
-
-    const interval = setInterval(() => {
-      fetchAvailable();
-    }, 5000);
-
-    return () => clearInterval(interval);
+    fetchOnlineStatus();
   }, [providerId]);
+
+  useEffect(() => {
+    if (!isOnline || !providerId) return;
+
+    fetchAvailable();
+    const interval = setInterval(fetchAvailable, 5000);
+    return () => clearInterval(interval);
+  }, [isOnline, providerId]);
 
   const handleAccept = async (id) => {
     try {
@@ -99,6 +133,23 @@ const ProviderDashboard = () => {
 
   return (
     <div className="provider-dashboard">
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <button
+          onClick={toggleOnlineStatus}
+          style={{
+            backgroundColor: isOnline ? '#16a34a' : '#6b7280',
+            color: '#fff',
+            padding: '10px 16px',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '16px',
+            cursor: 'pointer'
+          }}
+        >
+          {isOnline ? '🟢 אתה מחובר – לחץ להתנתק' : '⚫ אתה מנותק – לחץ להתחבר'}
+        </button>
+      </div>
+
       <h2>בקשות זמינות לשיוך</h2>
 
       {availableRequests.length === 0 ? (

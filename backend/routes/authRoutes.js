@@ -1,8 +1,7 @@
-// backend/routes/authRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 // 🔐 רישום משתמש חדש
@@ -30,11 +29,19 @@ router.post('/register', async (req, res) => {
     });
 
     await newUser.save();
+
+    const token = jwt.sign(
+      { id: newUser._id, isProvider: newUser.isProvider },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
     res.status(201).json({
       message: '🎉 ההרשמה בוצעה בהצלחה',
-      token: 'mock-token',
+      token,
       role: isProvider ? 'provider' : 'client',
-      userId: newUser._id
+      userId: newUser._id,
+      userName: newUser.name
     });
   } catch (err) {
     console.error('❌ Registration error:', err);
@@ -59,11 +66,18 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'אימייל או סיסמה שגויים' });
     }
 
+    const token = jwt.sign(
+      { id: user._id, isProvider: user.isProvider },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
     res.status(200).json({
       message: '🎉 התחברת בהצלחה',
-      token: 'mock-token',
+      token,
       role: user.isProvider ? 'provider' : 'client',
-      userId: user._id
+      userId: user._id,
+      userName: user.name
     });
   } catch (err) {
     console.error('❌ Login error:', err);
@@ -82,6 +96,19 @@ router.get('/addresses/:userId', async (req, res) => {
   } catch (err) {
     console.error('❌ Error fetching addresses:', err);
     res.status(500).json({ error: 'שגיאה בשליפת כתובות' });
+  }
+});
+
+// 📄 שליפת פרטי משתמש לפי ID (למשל לצורך בדיקת isOnline)
+router.get('/users/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).select('name isOnline isProvider');
+    if (!user) return res.status(404).json({ error: 'משתמש לא נמצא' });
+
+    res.json(user);
+  } catch (err) {
+    console.error('❌ שגיאה בשליפת משתמש לפי ID:', err);
+    res.status(500).json({ error: 'שגיאה בשליפת משתמש' });
   }
 });
 

@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const requestRoutes = require('./routes/requestRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const providerRoutes = require('./routes/providerRoutes'); // ✅ הוספה כאן
 
 const app = express();
 const server = http.createServer(app);
@@ -41,7 +42,6 @@ io.on('connection', (socket) => {
   socket.on('sendMessage', ({ roomId, message }) => {
     socket.to(roomId).emit('receiveMessage', message);
 
-    // התראה ישירה למשתמש אם מחובר
     const targetSocket = userSocketMap[message.receiverId];
     if (targetSocket) {
       io.to(targetSocket).emit('receiveMessage', message);
@@ -90,6 +90,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/provider', providerRoutes); // ✅ נוספה השורה הזו
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {

@@ -3,12 +3,12 @@
 const mongoose = require('mongoose');
 
 const addressSchema = new mongoose.Schema({
-  label: { type: String, required: true },  // למשל: "בית", "עבודה"
+  label: { type: String, required: true },
   street: { type: String, required: true },
   city: { type: String, required: true },
   zip: { type: String, required: true },
-  floor: { type: String, default: '' },     // ✅ קומה (אופציונלי)
-  apt: { type: String, default: '' }        // ✅ מספר דירה (אופציונלי)
+  floor: { type: String, default: '' },
+  apt: { type: String, default: '' }
 }, { _id: true });
 
 const userSchema = new mongoose.Schema({
@@ -17,8 +17,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   isProvider: { type: Boolean, default: false },
-  servicesProvided: [String], // רשימת השירותים שיכול לספק
-  addresses: [addressSchema]  // ✅ כולל את הקומה והדירה
+  servicesProvided: [String],
+  addresses: [addressSchema],
+  isOnline: { type: Boolean, default: false } 
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
